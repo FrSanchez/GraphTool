@@ -1,12 +1,12 @@
 using System.ComponentModel;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace GraphCanvas.Models;
 
-public class Edge(Vertex start, Vertex end) : INotifyPropertyChanged
+public class Edge(Vertex? start, Vertex? end) : INotifyPropertyChanged
 {
     [JsonIgnore]
-    public Vertex StartVertex
+    public Vertex? StartVertex
     {
         get => start;
         set
@@ -17,7 +17,7 @@ public class Edge(Vertex start, Vertex end) : INotifyPropertyChanged
     }
 
     [JsonIgnore]
-    public Vertex EndVertex
+    public Vertex? EndVertex
     {
         get => end;
         set
@@ -26,14 +26,19 @@ public class Edge(Vertex start, Vertex end) : INotifyPropertyChanged
             OnPropertyChanged(nameof(EndVertex));
         }
     }
+
+    public Edge() : this(null, null)
+    {
+        
+    }
     
     public bool Contains(Vertex vertex)
     {
         return start == vertex || end == vertex;
     }
     
-    public string Start { get; } = start.Name;
-    public string End { get; } = end.Name;
+    public string? Start { get; set;  } = start?.Name;
+    public string? End { get; set;  } = end?.Name;
 
     public event PropertyChangedEventHandler? PropertyChanged;
     protected void OnPropertyChanged(string propertyName)

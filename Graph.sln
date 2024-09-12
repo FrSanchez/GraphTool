@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphCanvas", "GraphCanvas\GraphCanvas.csproj", "{D353B790-0396-4104-BDF2-4684F8E0783C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphTest", "GraphTest\GraphTest.csproj", "{4A920240-086A-4037-A59F-08A2EE3A5D1A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{D353B790-0396-4104-BDF2-4684F8E0783C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D353B790-0396-4104-BDF2-4684F8E0783C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D353B790-0396-4104-BDF2-4684F8E0783C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A920240-086A-4037-A59F-08A2EE3A5D1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A920240-086A-4037-A59F-08A2EE3A5D1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A920240-086A-4037-A59F-08A2EE3A5D1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A920240-086A-4037-A59F-08A2EE3A5D1A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

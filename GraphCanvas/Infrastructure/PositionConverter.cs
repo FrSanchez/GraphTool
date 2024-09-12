@@ -17,7 +17,7 @@ public class PositionConverter : IValueConverter
         return value switch
         {
             double d => d - 16.0,
-            Point p => p + new Point(16, 16),
+            Point p => p + new Point(0, 0),
             _ => throw new ArgumentException()
         };
     }

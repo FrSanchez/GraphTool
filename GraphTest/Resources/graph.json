@@ -1,0 +1,15 @@
+{
+  "Vertices": [
+    { "Name": "0", "Position": { "X": 385.7, "Y": 236.9 } },
+    { "Name": "1", "Position": { "X": 331.8, "Y": 68.8 } },
+    { "Name": "2", "Position": { "X": 229.1, "Y": 139.5 } },
+    { "Name": "3", "Position": { "X": 428.9, "Y": 148.5 } },
+    { "Name": "4", "Position": { "X": 38, "Y": 74 } }
+  ],
+  "Edges": [
+    { "Start": "0", "End": "2" },
+    { "Start": "0", "End": "3" },
+    { "Start": "0", "End": "1" }
+  ],
+  "VertexNum": 5
+}

@@ -1,18 +1,24 @@
 using System;
 using System.ComponentModel;
-using Avalonia;
+using Newtonsoft.Json;
+using Point = Avalonia.Point;
 
 namespace GraphCanvas.Models;
 
-public class Vertex(string name, Point position) : INotifyPropertyChanged, IComparable<Vertex>
+public class Vertex : INotifyPropertyChanged, IComparable<Vertex>
 {
-    private string _name = name;
-    private Point _position = AdjustPosition(position);
-    private bool _selected = false;
-    private IComparable<Vertex> _comparableImplementation;
+    private string? _name;
+    private Point _position;
+    private bool _selected;
 
-    private static Point AdjustPosition(Point position) => new Point(position.X - 10, position.Y - 10);
+    public Vertex(string? name, Point position)
+    {
+        _name = name;
+        _position = position;
+        _selected = false;
+    }
 
+    [JsonIgnore]
     public bool Selected
     {
         get => _selected;
@@ -22,7 +28,7 @@ public class Vertex(string name, Point position) : INotifyPropertyChanged, IComp
             OnPropertyChanged(nameof(Selected));
         }
     }
-    public string Name
+    public string? Name
     {
         get => _name;
         set
@@ -37,7 +43,7 @@ public class Vertex(string name, Point position) : INotifyPropertyChanged, IComp
         get => _position;
         set
         {
-            _position = AdjustPosition(value);
+            _position = value;
             OnPropertyChanged(nameof(Position));
         }
     }

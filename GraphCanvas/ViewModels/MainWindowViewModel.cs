@@ -3,33 +3,34 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Platform.Storage;
 using GraphCanvas.Models;
+using Newtonsoft.Json;
 
 namespace GraphCanvas.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-    public ObservableCollection<Vertex> VertexList { get; private set; } = [];
+    public ObservableCollection<Vertex?> VertexList { get; private set; } = [];
     public ObservableCollection<Edge> EdgeList { get; private set;  } = [];
 
     private int _vertexNum = 0;
     
-    public void AddVertex(Point position)
+    public Vertex AddVertex(Point position)
     {
         var vertex = new Vertex($"{_vertexNum++}", position);
         Console.WriteLine($"Adding vertex {vertex.Name}");
         VertexList.Add(vertex);
+        return vertex;
     }
 
-    public void AddEdge(Vertex startVertex, Vertex endVertex)
+    public Edge? AddEdge(Vertex? startVertex, Vertex? endVertex)
     {
-        if (startVertex.Name == endVertex.Name)
+        if (startVertex == null || endVertex == null  || startVertex.Name == endVertex.Name)
         {
-            return;
+            return null;
         }
         // order the vertices alphabetically
         if (string.Compare(startVertex.Name, endVertex.Name, StringComparison.Ordinal) > 0)
@@ -41,7 +42,10 @@ public class MainWindowViewModel : ViewModelBase
         if (!EdgeList.Contains(edge))
         {
             EdgeList.Add(edge);
+            return edge;
         }
+
+        return null;
     }
     
     public void Delete(Vertex vertex)
@@ -60,10 +64,10 @@ public class MainWindowViewModel : ViewModelBase
         // Open writing stream from the file.
         await using var stream = await file.OpenWriteAsync();
         await using var streamWriter = new StreamWriter(stream);
-        var edges = EdgeList.Select(edge => new KeyValuePair<string, string>(edge.StartVertex.Name, edge.EndVertex.Name)).ToList();
+        var edges = EdgeList.Select(edge => new KeyValuePair<string?, string>(edge.StartVertex.Name, edge.EndVertex.Name)).ToList();
         var graph = new GraphModel() { Vertices = VertexList, Edges = EdgeList, VertexNum = _vertexNum };
-        var graphSerialized = JsonSerializer.Serialize(graph);
-        // Write some content to the file.
+        var graphSerialized = JsonConvert.SerializeObject(graph);
+        // Write some content to the file.∫
         await streamWriter.WriteLineAsync(graphSerialized);
 
     }
@@ -75,9 +79,30 @@ public class MainWindowViewModel : ViewModelBase
         using var streamReader = new StreamReader(stream);
         // Reads all the content of file as a text.
         var fileContent = await streamReader.ReadToEndAsync();
-        var graph = JsonSerializer.Deserialize<GraphModel>(fileContent);
-        VertexList = new ObservableCollection<Vertex> (graph.Vertices);
-        _vertexNum = graph.VertexNum;
+        var graph = JsonConvert.DeserializeObject<GraphModel>(fileContent);
+        New();
+        if (graph != null && graph.Vertices != null)
+        {
+            var dict = new Dictionary<string, Vertex?>();
+            foreach (var vtx in graph.Vertices)
+            {
+                if (vtx?.Name != null) dict.Add(vtx.Name, vtx);
+                VertexList.Add(vtx);
+            }
+            _vertexNum = graph.VertexNum;
+            foreach(var edge in graph.Edges)
+            {
+                Console.WriteLine($"Creating edge {edge}");
+                if (edge is { End: not null, Start: not null } && dict.TryGetValue(edge.Start, out var start) && dict.TryGetValue(edge.End, out var end))
+                {
+                    EdgeList.Add(new Edge(start, end));
+                }
+                else
+                {
+                    throw new ApplicationException("invalid edge data in file");
+                }
+            }
+        }
     }
 
     public void New()

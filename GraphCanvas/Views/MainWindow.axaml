@@ -63,6 +63,7 @@
                 <Panel
                     Canvas.Left="{Binding Position.X}"
                     Canvas.Top="{Binding Position.Y}"
+                    RenderTransformOrigin="0.5, 0.5"
                     PointerPressed="OnVertexPointerPressed"
                     PointerMoved="OnVertexPointerMoved"
                     PointerReleased="OnVertexPointerReleased"
@@ -80,8 +81,8 @@
                                VerticalAlignment="Center"/>
                     <Panel.RenderTransform>
                         <TranslateTransform
-                            X="{Binding Position.X}"
-                            Y="{Binding Position.Y}"/>
+                            X="{Binding Position.X, Converter={x:Static infrastructure:PositionConverter.Instance}}"
+                            Y="{Binding Position.Y, Converter={x:Static infrastructure:PositionConverter.Instance}}"/>
                     </Panel.RenderTransform>
                 </Panel>
             </DataTemplate>
