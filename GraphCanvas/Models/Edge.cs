@@ -1,9 +1,10 @@
+using System;
 using System.ComponentModel;
 using Newtonsoft.Json;
 
 namespace GraphCanvas.Models;
 
-public class Edge(Vertex? start, Vertex? end) : INotifyPropertyChanged
+public class Edge(Vertex? start, Vertex? end) : INotifyPropertyChanged, IEquatable<Edge>
 {
     [JsonIgnore]
     public Vertex? StartVertex
@@ -44,5 +45,12 @@ public class Edge(Vertex? start, Vertex? end) : INotifyPropertyChanged
     protected void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    public bool Equals(Edge? other)
+    {
+        if (other == null)
+            return false;
+        return (Start == other.Start && End == other.End) || (Start == other.End && End == other.Start);
     }
 }
