@@ -1,5 +1,7 @@
 using System;
+using System.Diagnostics;
 using System.Globalization;
+using Avalonia;
 using Avalonia.Data.Converters;
 
 namespace GraphCanvas.Infrastructure;
@@ -10,10 +12,12 @@ public class PositionConverter : IValueConverter
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
+        Console.WriteLine(value);
+        Console.WriteLine(targetType);
         return value switch
         {
-            double d => d - 15 ,
-            int d => d - 15,
+            double d => d - 16.0,
+            Point p => p + new Point(16, 16),
             _ => throw new ArgumentException()
         };
     }

@@ -1,28 +1,39 @@
 using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace GraphCanvas.Models;
 
-public class Edge(Node start, Node end) : INotifyPropertyChanged
+public class Edge(Vertex start, Vertex end) : INotifyPropertyChanged
 {
-    public Node StartNode
+    [JsonIgnore]
+    public Vertex StartVertex
     {
         get => start;
         set
         {
             start = value;
-            OnPropertyChanged(nameof(StartNode));
+            OnPropertyChanged(nameof(StartVertex));
         }
     }
 
-    public Node EndNode
+    [JsonIgnore]
+    public Vertex EndVertex
     {
         get => end;
         set
         {
             end = value;
-            OnPropertyChanged(nameof(EndNode));
+            OnPropertyChanged(nameof(EndVertex));
         }
     }
+    
+    public bool Contains(Vertex vertex)
+    {
+        return start == vertex || end == vertex;
+    }
+    
+    public string Start { get; } = start.Name;
+    public string End { get; } = end.Name;
 
     public event PropertyChangedEventHandler? PropertyChanged;
     protected void OnPropertyChanged(string propertyName)

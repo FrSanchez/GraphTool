@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -14,8 +15,8 @@ namespace GraphCanvas.Views;
 public partial class MainWindow :  ReactiveWindow<MainWindowViewModel>
 {
     private bool _isDragging = false;
-    private Node? _draggedNode = null;
-    private Node? _edgeNode = null;
+    private Vertex? _draggedVertex = null;
+    private Vertex? _edgeVertex = null;
 
     public MainWindow()
     {
@@ -31,74 +32,79 @@ public partial class MainWindow :  ReactiveWindow<MainWindowViewModel>
         {
             Console.WriteLine($"Pointer pressed {position}");
 
-            // Add a new node at the clicked position
+            // Add a new vertex at the clicked position
             if (this.DataContext is MainWindowViewModel viewModel)
             {
-                viewModel.AddNode(position);
+                viewModel.AddVertex(position - new Point(0, 32));
             }
         }
 
     }
 
-    private void OnNodePointerPressed(object sender, Avalonia.Input.PointerPressedEventArgs e)
+    private void OnVertexPointerPressed(object sender, Avalonia.Input.PointerPressedEventArgs e)
     {
         var point = e.GetCurrentPoint(sender as Control);
         if (point.Properties.IsLeftButtonPressed)
         {
             e.Handled = true;
-            if ((sender as Border)?.DataContext is Node node)
+            if ((sender as Panel)?.DataContext is Vertex vertex)
             {
-                Console.WriteLine($"OnNodePointerPressed {node.Name} {e.GetPosition(this)}");
+                Console.WriteLine($"OnVertexPointerPressed {vertex.Name} {e.GetPosition(this)}");
                 _isDragging = true;
-                _draggedNode = node;
+                _draggedVertex = vertex;
             }
         }
         
         if (point.Properties.IsRightButtonPressed)
         {
-            if (_edgeNode == null)
+            if (_edgeVertex == null)
             {
-                if ((sender as Border)?.DataContext is Node node)
+                if ((sender as Panel)?.DataContext is Vertex vertex)
                 {
-                    _edgeNode = node;
+                    _edgeVertex = vertex;
+                    vertex.Selected = true;
+                    Console.WriteLine($"Selected vertex {_edgeVertex.Name}");
                 }
             }
             else
             {
-                if ((sender as Border)?.DataContext is Node node && this.DataContext is MainWindowViewModel viewModel)
+                if ((sender as Panel)?.DataContext is Vertex vertex && this.DataContext is MainWindowViewModel viewModel)
                 {
-                    Console.WriteLine($"OnNodePointerPressed edge {_edgeNode.Name} to {node.Name}");
-                    viewModel.AddEdge(_edgeNode, node);
+                    Console.WriteLine($"OnVertexPointerPressed edge {_edgeVertex.Name} to {vertex.Name}");
+                    _edgeVertex.Selected = false;
+                    vertex.Selected = false;
+                    viewModel.AddEdge(_edgeVertex, vertex);
                 }
-                _edgeNode = null;
+                _edgeVertex = null;
             }
         }
     }
 
-    private void OnNodePointerMoved(object sender, Avalonia.Input.PointerEventArgs e)
+    private void OnVertexPointerMoved(object sender, Avalonia.Input.PointerEventArgs e)
     {
-        if (_isDragging && _draggedNode != null)
+        if (_isDragging && _draggedVertex != null)
         {
             var position = e.GetPosition(this);
-            Console.WriteLine($"OnNodePointerMoved {_draggedNode.Name} to {position}");
-            _draggedNode.Position = position;
+            Console.WriteLine($"OnVertexPointerMoved {_draggedVertex.Name} to {position}");
+            Console.WriteLine(sender);
+            _draggedVertex.Position = position  - new Point(0, 32);
         }
     }
 
-    private void OnNodePointerReleased(object sender, Avalonia.Input.PointerReleasedEventArgs e)
+    private void OnVertexPointerReleased(object sender, Avalonia.Input.PointerReleasedEventArgs e)
     {
-        Console.WriteLine($"OnNodePointerMoved {e.GetPosition(this)}");
-        if (_isDragging && _draggedNode != null && this.DataContext is MainWindowViewModel viewModel)
+        Console.WriteLine($"OnVertexPointerReleased {e.GetPosition(this)}");
+        if (_isDragging && _draggedVertex != null && this.DataContext is MainWindowViewModel viewModel)
         {
             var position = e.GetPosition(this);
             if (position.X < 0 || position.Y < 0 || position.X > this.Width || position.Y > this.Height)
             {
-                viewModel.Delete(_draggedNode);
+                viewModel.Delete(_draggedVertex);
             }
         }
 
         _isDragging = false;
-        _draggedNode = null;
+        _draggedVertex = null;
 
     }
 
@@ -120,7 +126,7 @@ public partial class MainWindow :  ReactiveWindow<MainWindowViewModel>
 
         if (file is not null && this.DataContext is MainWindowViewModel viewModel)
         {
-            viewModel.Save(file);
+            await viewModel.Save(file);
         }
     }
 
@@ -139,6 +145,14 @@ public partial class MainWindow :  ReactiveWindow<MainWindowViewModel>
         if (files.Count >= 1 && this.DataContext is MainWindowViewModel viewModel)
         {
             await viewModel.Load(files[0]);
+        }
+    }
+
+    private void MenuNew_Clicked(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainWindowViewModel viewModel)
+        {
+            viewModel.New();
         }
     }
 }

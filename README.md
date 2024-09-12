@@ -7,8 +7,8 @@ Basic Avalonia application to visualize graphs.
 - Add vertex to graph
 - Add edge
 - Remove vertex
+- Remove vertex also removes edge
 
 ## TODO
 - Remove edge
-- Remove vertex also removes edge
 - Loading graph from file

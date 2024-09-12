@@ -1,52 +1,58 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Platform.Storage;
 using GraphCanvas.Models;
-using Node = GraphCanvas.Models.Node;
 
 namespace GraphCanvas.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-    public ObservableCollection<Node> NodeList { get; private set; } = [];
+    public ObservableCollection<Vertex> VertexList { get; private set; } = [];
     public ObservableCollection<Edge> EdgeList { get; private set;  } = [];
 
-    private int _nodeNum = 0;
+    private int _vertexNum = 0;
     
-    public void AddNode(Point position)
+    public void AddVertex(Point position)
     {
-        // Create a new node at the clicked position
-        var newNode = new Node($"{_nodeNum++}", position);
-        Console.WriteLine($"Adding node {newNode.Name}");
-        NodeList.Add(newNode);
+        var vertex = new Vertex($"{_vertexNum++}", position);
+        Console.WriteLine($"Adding vertex {vertex.Name}");
+        VertexList.Add(vertex);
     }
 
-    public void AddEdge(Node startNode, Node endNode)
+    public void AddEdge(Vertex startVertex, Vertex endVertex)
     {
-        if (startNode.Name == endNode.Name)
+        if (startVertex.Name == endVertex.Name)
         {
             return;
         }
-        // order the nodes alphabetically
-        if (string.Compare(startNode.Name, endNode.Name, StringComparison.Ordinal) > 0)
+        // order the vertices alphabetically
+        if (string.Compare(startVertex.Name, endVertex.Name, StringComparison.Ordinal) > 0)
         {
-            (startNode, endNode) = (endNode, startNode);
+            (startVertex, endVertex) = (endVertex, startVertex);
         }
 
-        var edge = new Edge(startNode, endNode);
+        var edge = new Edge(startVertex, endVertex);
         if (!EdgeList.Contains(edge))
         {
             EdgeList.Add(edge);
         }
     }
     
-    public void Delete(Node draggedNode)
+    public void Delete(Vertex vertex)
     {
-        NodeList.Remove(draggedNode);
+        var tbd = EdgeList.Where(edge => edge.Contains(vertex)).ToList();
+
+        foreach (var edge in tbd)
+        {
+            EdgeList.Remove(edge);
+        }
+        VertexList.Remove(vertex);
     }
 
     public async Task Save(IStorageFile file)
@@ -54,8 +60,8 @@ public class MainWindowViewModel : ViewModelBase
         // Open writing stream from the file.
         await using var stream = await file.OpenWriteAsync();
         await using var streamWriter = new StreamWriter(stream);
-        // Serialize the NodeList to JSON.
-        var graph = new GraphModel() { Nodes = NodeList, Edges = EdgeList, NodeNum = _nodeNum };
+        var edges = EdgeList.Select(edge => new KeyValuePair<string, string>(edge.StartVertex.Name, edge.EndVertex.Name)).ToList();
+        var graph = new GraphModel() { Vertices = VertexList, Edges = EdgeList, VertexNum = _vertexNum };
         var graphSerialized = JsonSerializer.Serialize(graph);
         // Write some content to the file.
         await streamWriter.WriteLineAsync(graphSerialized);
@@ -70,8 +76,14 @@ public class MainWindowViewModel : ViewModelBase
         // Reads all the content of file as a text.
         var fileContent = await streamReader.ReadToEndAsync();
         var graph = JsonSerializer.Deserialize<GraphModel>(fileContent);
-        NodeList = new ObservableCollection<Node> (graph.Nodes);
-        EdgeList = new ObservableCollection<Edge>(graph.Edges);
-        _nodeNum = graph.NodeNum;
+        VertexList = new ObservableCollection<Vertex> (graph.Vertices);
+        _vertexNum = graph.VertexNum;
+    }
+
+    public void New()
+    {
+        VertexList.Clear();
+        EdgeList.Clear();
+        _vertexNum = 0;
     }
 }

@@ -4,7 +4,7 @@ namespace GraphCanvas.Models;
 
 public class GraphModel
 {
-    public IEnumerable<Node> Nodes { get; set; }
-    public IEnumerable<Edge> Edges { get; set; }
-    public int NodeNum { get; set; }
+    public IEnumerable<Vertex> Vertices { get; set; } = [];
+    public IEnumerable<Edge> Edges { get; set; } = [];
+    public int VertexNum { get; set; } = 0;
 }
