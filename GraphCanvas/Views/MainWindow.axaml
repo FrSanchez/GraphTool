@@ -41,11 +41,13 @@
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Line StartPoint="{Binding StartVertex.Position, Converter={x:Static infrastructure:PositionConverter.Instance}}" 
-                          EndPoint="{Binding EndVertex.Position, Converter={x:Static infrastructure:PositionConverter.Instance}}" 
+                    <Panel PointerPressed="Edge_OnPointerPressed">
+                    <Line StartPoint="{Binding StartVertex.Position, Converter={x:Static infrastructure:PositionConverter.Instance}, FallbackValue=0}" 
+                          EndPoint="{Binding EndVertex.Position, Converter={x:Static infrastructure:PositionConverter.Instance}, FallbackValue=0}" 
                           RenderTransformOrigin="0.5, 0.5"
                           Stroke="Gray" StrokeThickness="2">
                     </Line>
+                    </Panel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
@@ -78,12 +80,20 @@
                     <TextBlock Text="{Binding Name}" 
                                Foreground="LightGray" 
                                HorizontalAlignment="Center"
-                               VerticalAlignment="Center"/>
+                               VerticalAlignment="Center">
+                    </TextBlock>
                     <Panel.RenderTransform>
                         <TranslateTransform
                             X="{Binding Position.X, Converter={x:Static infrastructure:PositionConverter.Instance}}"
                             Y="{Binding Position.Y, Converter={x:Static infrastructure:PositionConverter.Instance}}"/>
                     </Panel.RenderTransform>
+                    <Panel.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Link" Command="{Binding $parent[DockPanel].((vm:MainWindowViewModel)DataContext).StartCommand}" CommandParameter="{Binding .}"/>
+                            <MenuItem Header="Delete" Command="{Binding $parent[DockPanel].((vm:MainWindowViewModel)DataContext).DeleteCommand}" CommandParameter="{Binding .}"/>
+                        </ContextMenu>
+                    </Panel.ContextMenu>    
+
                 </Panel>
             </DataTemplate>
         </ItemsControl.ItemTemplate>

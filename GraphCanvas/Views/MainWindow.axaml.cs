@@ -55,29 +55,29 @@ public partial class MainWindow :  ReactiveWindow<MainWindowViewModel>
             }
         }
         
-        if (point.Properties.IsRightButtonPressed)
-        {
-            if (_edgeVertex == null)
-            {
-                if ((sender as Panel)?.DataContext is Vertex vertex)
-                {
-                    _edgeVertex = vertex;
-                    vertex.Selected = true;
-                    Console.WriteLine($"Selected vertex {_edgeVertex.Name}");
-                }
-            }
-            else
-            {
-                if ((sender as Panel)?.DataContext is Vertex vertex && this.DataContext is MainWindowViewModel viewModel)
-                {
-                    Console.WriteLine($"OnVertexPointerPressed edge {_edgeVertex.Name} to {vertex.Name}");
-                    _edgeVertex.Selected = false;
-                    vertex.Selected = false;
-                    viewModel.AddEdge(_edgeVertex, vertex);
-                }
-                _edgeVertex = null;
-            }
-        }
+        // if (point.Properties.IsRightButtonPressed)
+        // {
+        //     if (_edgeVertex == null)
+        //     {
+        //         if ((sender as Panel)?.DataContext is Vertex vertex)
+        //         {
+        //             _edgeVertex = vertex;
+        //             vertex.Selected = true;
+        //             Console.WriteLine($"Selected vertex {_edgeVertex.Name}");
+        //         }
+        //     }
+        //     else
+        //     {
+        //         if ((sender as Panel)?.DataContext is Vertex vertex && this.DataContext is MainWindowViewModel viewModel)
+        //         {
+        //             Console.WriteLine($"OnVertexPointerPressed edge {_edgeVertex.Name} to {vertex.Name}");
+        //             _edgeVertex.Selected = false;
+        //             vertex.Selected = false;
+        //             viewModel.AddEdge(_edgeVertex, vertex);
+        //         }
+        //         _edgeVertex = null;
+        //     }
+        // }
     }
 
     private void OnVertexPointerMoved(object sender, Avalonia.Input.PointerEventArgs e)
@@ -86,7 +86,6 @@ public partial class MainWindow :  ReactiveWindow<MainWindowViewModel>
         {
             var position = e.GetPosition(this);
             Console.WriteLine($"OnVertexPointerMoved {_draggedVertex.Name} to {position}");
-            Console.WriteLine(sender);
             _draggedVertex.Position = position  - new Point(0, 32);
         }
     }
@@ -154,5 +153,23 @@ public partial class MainWindow :  ReactiveWindow<MainWindowViewModel>
         {
             viewModel.New();
         }
+    }
+
+    private void Edge_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        Console.WriteLine($"Edge_OnPointerPressed {sender}");
+    }
+
+    private void MenuDelete_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainWindowViewModel viewModel)
+        {
+            Console.WriteLine($"MenuDelete_OnClick {sender}");
+        }
+    }
+
+    private void MenuStart_OnClick(object? sender, RoutedEventArgs e)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Platform.Storage;
 using GraphCanvas.Models;
 using Newtonsoft.Json;
+using ReactiveUI;
 
 namespace GraphCanvas.ViewModels;
 
@@ -15,6 +17,32 @@ public class MainWindowViewModel : ViewModelBase
 {
     public ObservableCollection<Vertex?> VertexList { get; private set; } = [];
     public ObservableCollection<Edge> EdgeList { get; private set;  } = [];
+    public ReactiveCommand<Vertex, Unit> DeleteCommand { get; }
+    public ReactiveCommand<Vertex, Unit> StartCommand { get;  }
+
+    private Vertex? _selectedVertex = null;
+
+    public MainWindowViewModel()
+    {
+        DeleteCommand = ReactiveCommand.Create<Vertex>(Delete);
+        StartCommand = ReactiveCommand.Create<Vertex>(Start);
+    }
+
+    private void Start(Vertex vertex)
+    {
+        if (_selectedVertex == null && !vertex.Selected)
+        {
+            vertex.Selected = true;
+            _selectedVertex = vertex;
+        }
+
+        if (_selectedVertex != null && !vertex.Selected)
+        {
+            _selectedVertex.Selected = false;
+            AddEdge(_selectedVertex, vertex);
+            _selectedVertex = null;
+        }
+    }
 
     private int _vertexNum = 0;
     
@@ -39,13 +67,10 @@ public class MainWindowViewModel : ViewModelBase
         }
 
         var edge = new Edge(startVertex, endVertex);
-        if (!EdgeList.Contains(edge))
-        {
-            EdgeList.Add(edge);
-            return edge;
-        }
+        if (EdgeList.Remove(edge)) return null;
+        EdgeList.Add(edge);
+        return edge;
 
-        return null;
     }
     
     public void Delete(Vertex vertex)
@@ -56,7 +81,15 @@ public class MainWindowViewModel : ViewModelBase
         {
             EdgeList.Remove(edge);
         }
-        VertexList.Remove(vertex);
+
+        if (VertexList.Remove(vertex))
+        {
+            if (int.TryParse(VertexList.Last()?.Name, out var num))
+            {
+                _vertexNum = num + 1;
+            }
+        }
+        Console.Error.WriteLine("Delete vertex failed {vertex.Name}");
     }
 
     public async Task Save(IStorageFile file)

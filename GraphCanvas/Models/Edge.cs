@@ -28,6 +28,7 @@ public class Edge(Vertex? start, Vertex? end) : INotifyPropertyChanged, IEquatab
         }
     }
 
+    // Used by json (de)serialization
     public Edge() : this(null, null)
     {
         
