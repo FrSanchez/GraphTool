@@ -89,7 +89,7 @@
                     </Panel.RenderTransform>
                     <Panel.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Link" Command="{Binding $parent[DockPanel].((vm:MainWindowViewModel)DataContext).StartCommand}" CommandParameter="{Binding .}"/>
+                            <MenuItem Header="Edge" Command="{Binding $parent[DockPanel].((vm:MainWindowViewModel)DataContext).StartCommand}" CommandParameter="{Binding .}"/>
                             <MenuItem Header="Delete" Command="{Binding $parent[DockPanel].((vm:MainWindowViewModel)DataContext).DeleteCommand}" CommandParameter="{Binding .}"/>
                         </ContextMenu>
                     </Panel.ContextMenu>    
