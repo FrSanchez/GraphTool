@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Platform.Storage;
@@ -76,6 +77,11 @@ public class MainWindowViewModel : ViewModelBase
     public void Delete(Vertex vertex)
     {
         var tbd = EdgeList.Where(edge => edge.Contains(vertex)).ToList();
+        if (_selectedVertex == vertex)
+        {
+            _selectedVertex = null;
+            vertex.Selected = false;
+        }
 
         foreach (var edge in tbd)
         {

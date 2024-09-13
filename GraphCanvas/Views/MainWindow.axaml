@@ -41,12 +41,13 @@
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Panel PointerPressed="Edge_OnPointerPressed">
-                    <Line StartPoint="{Binding StartVertex.Position, Converter={x:Static infrastructure:PositionConverter.Instance}, FallbackValue=0}" 
-                          EndPoint="{Binding EndVertex.Position, Converter={x:Static infrastructure:PositionConverter.Instance}, FallbackValue=0}" 
-                          RenderTransformOrigin="0.5, 0.5"
-                          Stroke="Gray" StrokeThickness="2">
-                    </Line>
+                    <Panel RenderTransformOrigin="0.5, 0.5"
+                           PointerPressed="Edge_OnPointerPressed">
+                        <Line StartPoint="{Binding StartVertex.Position, Converter={x:Static infrastructure:PositionConverter.Instance}, FallbackValue=0}" 
+                              EndPoint="{Binding EndVertex.Position, Converter={x:Static infrastructure:PositionConverter.Instance}, FallbackValue=0}" 
+                              RenderTransformOrigin="0.5, 0.5"
+                              Stroke="Gray" StrokeThickness="2">
+                        </Line>
                     </Panel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
